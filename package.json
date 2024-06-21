@@ -1,16 +1,15 @@
 {
-  "name": "hexo-mermaid-diagrams",
+  "name": "hexo-mermaid-js-diagrams",
   "version": "0.0.5",
-  "description": "Hexo plugin for rendering mermaid diagrams by puppeteer.",
+  "description": "Hexo plugin for rendering mermaid diagrams.",
   "main": "index.js",
   "keywords": [
     "Hexo",
     "Mermaid"
   ],
-  "author": "Mslxl",
   "license": "MIT",
   "dependencies": {
     "puppeteer": "^18.2.1"
   },
-  "repository": "mslxl/hexo-mermaid-diagrams"
+  "repository": "neoalienson/hexo-mermaid-js-diagrams"
 }
