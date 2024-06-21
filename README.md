@@ -1,6 +1,6 @@
 Hexo plugin for rendering mermaid js diagrams
 
-This repo has the upgrade.
+This repo maintains the upgrade.
 
 * mermaid 10.9.1
 
@@ -10,7 +10,7 @@ Install:
 npm i hexo-mermaid-js-diagrams
 ```
 
-<hr/>
+## Sample
 
 ```
 {% mermaid %}
@@ -21,3 +21,6 @@ graph TD;
     C-->D;
 {% endmermaid %}
 ```
+## Security Implications
+
+⚠️ The plugin uses `puppeteer` `eval()`. The validation to prevent potential security vulnerabilities is not reviewed. Use at your own risk.
