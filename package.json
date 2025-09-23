@@ -9,7 +9,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "puppeteer": "^18.2.1"
+    "puppeteer": "^24.22.1"
   },
   "repository": "neoalienson/hexo-mermaid-js-diagrams"
 }
