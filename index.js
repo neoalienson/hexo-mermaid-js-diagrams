@@ -22,14 +22,12 @@ hexo.config.mermaid = Object.assign({
 global.hexo = Object.assign(hexo,global.hexo)
 
 if (hexo.config.mermaid.enable) {
-    const util = require('hexo-util');
+    const builder = require('./builder');
     
     hexo.extend.tag.register('mermaid',(arg,content)=>{
         if (hexo.config.mermaid.renderMode === 'live') {
-            return `<div class="mermaid" >${content}</div>`;
+            return `<div class="mermaid">${content}</div>`;
         }
-
-        const builder = require('./builder');
         return builder(content);
     } , { async: true,ends: true });
 

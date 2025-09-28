@@ -3,6 +3,9 @@
   "version": "0.0.5",
   "description": "Hexo plugin for rendering mermaid diagrams.",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*.test.js"
+  },
   "keywords": [
     "Hexo",
     "Mermaid"
@@ -10,6 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "puppeteer": "^24.22.1"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0"
   },
   "repository": "neoalienson/hexo-mermaid-js-diagrams"
 }
