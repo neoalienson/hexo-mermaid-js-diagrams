@@ -59,6 +59,7 @@ describe('hexo-mermaid-js-diagrams', () => {
     require('../index.js');
     
     assert(mockHexo.extend.tag.registeredTags.mermaid);
+    // assert(mockHexo.extend.injector.registeredInjectors.head_end);
   });
 
   it('should return div wrapper in live mode', async () => {
