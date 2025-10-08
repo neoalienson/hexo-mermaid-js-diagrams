@@ -32,6 +32,12 @@ const mockHexo = {
         this.registeredInjectors = this.registeredInjectors || {};
         this.registeredInjectors[position] = fn;
       }
+    },
+    filter: {
+      register: function(event, fn) {
+        this.registeredFilters = this.registeredFilters || {};
+        this.registeredFilters[event] = fn;
+      }
     }
   }
 };
@@ -43,6 +49,7 @@ describe('hexo-mermaid-js-diagrams', () => {
     delete require.cache[require.resolve('../index.js')];
     mockHexo.extend.tag.registeredTags = {};
     mockHexo.extend.injector.registeredInjectors = {};
+    mockHexo.extend.filter.registeredFilters = {};
   });
 
   it('should register mermaid tag in puppeteer mode', () => {
@@ -54,12 +61,12 @@ describe('hexo-mermaid-js-diagrams', () => {
     assert.equal(mockHexo.extend.tag.registeredTags.mermaid.options.ends, true);
   });
 
-  it('should register mermaid tag in live mode', () => {
+  it('should register mermaid tag and after_generate filter in live mode', () => {
     mockHexo.config.mermaid.renderMode = 'live';
     require('../index.js');
     
     assert(mockHexo.extend.tag.registeredTags.mermaid);
-    // assert(mockHexo.extend.injector.registeredInjectors.head_end);
+    assert(mockHexo.extend.filter.registeredFilters.after_generate);
   });
 
   it('should return div wrapper in live mode', async () => {
@@ -87,5 +94,39 @@ describe('hexo-mermaid-js-diagrams', () => {
     const result = await tagFn([], 'graph TD; A-->B;');
     
     assert.equal(result, '<svg>mocked</svg>');
+  });
+
+  it('should handle complex flowchart with HTML entities in live mode', async () => {
+    mockHexo.config.mermaid.renderMode = 'live';
+    require('../index.js');
+    
+    const tagFn = mockHexo.extend.tag.registeredTags.mermaid.fn;
+    const complexDiagram = `flowchart TD
+    A[Identify Assets] --&gt; B[Define Threats]
+    B --&gt; C[Create Data Flow Diagram]
+    C --&gt; D[Analyze Trust Boundaries]
+    D --&gt; E[Apply Framework&lt;br/&gt;STRIDE/PASTA]
+    E --&gt; F[Assess Impact & Likelihood]
+    F --&gt; G[Prioritize Threats]
+    G --&gt; H[Define Mitigations]
+    H --&gt; I[Implement Controls]
+    I --&gt; J[Monitor & Review]
+    J --&gt; |Continuous Process| B
+    
+    style A fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style H fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style J fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff`;
+    
+    const result = await tagFn([], complexDiagram);
+    
+    assert.equal(result, `<div class="mermaid">${complexDiagram}</div>`);
+  });
+
+  it('should register filter for js_url configuration', () => {
+    mockHexo.config.mermaid.renderMode = 'live';
+    mockHexo.config.mermaid.js_url = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js';
+    require('../index.js');
+    
+    assert(mockHexo.extend.filter.registeredFilters.after_generate);
   });
 });

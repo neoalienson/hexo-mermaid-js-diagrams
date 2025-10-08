@@ -19,6 +19,7 @@ mermaid:
   enable: true
   renderMode: puppeteer  # 'puppeteer' (default) or 'live'
   theme: default
+  js_url: https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js  # optional, defaults to local mermaid.min.js
 ```
 
 ### Render Modes
