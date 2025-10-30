@@ -6,7 +6,7 @@ const log = hexo.log || console;
 
 hexo.config.mermaid = Object.assign({
     enable: true,
-    renderMode: 'puppeteer', // 'puppeteer' or 'live'
+    render_mode: 'puppeteer', // 'puppeteer' or 'live'
     theme: 'default',
     js_url: 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js',
     puppeteerConfig: { 
@@ -17,7 +17,8 @@ hexo.config.mermaid = Object.assign({
         width: 2048,
         height: 1024,
     },
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    priority: 0
 }, hexo.config.mermaid);
 
 global.hexo = Object.assign(hexo,global.hexo)
@@ -28,7 +29,7 @@ if (hexo.config.mermaid.enable) {
     const builder = require('./builder');
     
     // Inject Mermaid.js script for live mode
-    if (hexo.config.mermaid.renderMode === 'live') {
+    if (hexo.config.mermaid.render_mode === 'live') {
         hexo.extend.filter.register('after_generate', function() {
             const route = hexo.route;
             const routeList = route.list();
@@ -57,11 +58,11 @@ if (hexo.config.mermaid.enable) {
                     route.set(hpath, htmls[hpath]);
                 }
             });
-        });
+        }, hexo.config.mermaid.priority);
     }
     
     hexo.extend.tag.register('mermaid',(arg,content)=>{
-        if (hexo.config.mermaid.renderMode === 'live') {
+        if (hexo.config.mermaid.render_mode === 'live') {
             return `<div class="mermaid">${content}</div>`;
         }
         return builder(content);

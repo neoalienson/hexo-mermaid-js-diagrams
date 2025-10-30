@@ -1,6 +1,6 @@
 {
   "name": "hexo-mermaid-js-diagrams",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Hexo plugin for rendering mermaid diagrams.",
   "main": "index.js",
   "scripts": {

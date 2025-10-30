@@ -16,7 +16,7 @@ const mockHexo = {
   config: {
     mermaid: {
       enable: true,
-      renderMode: 'puppeteer',
+      render_mode: 'puppeteer',
       theme: 'default'
     }
   },
@@ -53,7 +53,7 @@ describe('hexo-mermaid-js-diagrams', () => {
   });
 
   it('should register mermaid tag in puppeteer mode', () => {
-    mockHexo.config.mermaid.renderMode = 'puppeteer';
+    mockHexo.config.mermaid.render_mode = 'puppeteer';
     require('../index.js');
     
     assert(mockHexo.extend.tag.registeredTags.mermaid);
@@ -62,7 +62,7 @@ describe('hexo-mermaid-js-diagrams', () => {
   });
 
   it('should register mermaid tag and after_generate filter in live mode', () => {
-    mockHexo.config.mermaid.renderMode = 'live';
+    mockHexo.config.mermaid.render_mode = 'live';
     require('../index.js');
     
     assert(mockHexo.extend.tag.registeredTags.mermaid);
@@ -70,7 +70,7 @@ describe('hexo-mermaid-js-diagrams', () => {
   });
 
   it('should return div wrapper in live mode', async () => {
-    mockHexo.config.mermaid.renderMode = 'live';
+    mockHexo.config.mermaid.render_mode = 'live';
     require('../index.js');
     
     const tagFn = mockHexo.extend.tag.registeredTags.mermaid.fn;
@@ -80,7 +80,7 @@ describe('hexo-mermaid-js-diagrams', () => {
   });
 
   it('should use builder in puppeteer mode', async () => {
-    mockHexo.config.mermaid.renderMode = 'puppeteer';
+    mockHexo.config.mermaid.render_mode = 'puppeteer';
     
     // Mock builder to avoid puppeteer dependency in tests
     const originalBuilder = require('../builder');
@@ -97,7 +97,7 @@ describe('hexo-mermaid-js-diagrams', () => {
   });
 
   it('should handle complex flowchart with HTML entities in live mode', async () => {
-    mockHexo.config.mermaid.renderMode = 'live';
+    mockHexo.config.mermaid.render_mode = 'live';
     require('../index.js');
     
     const tagFn = mockHexo.extend.tag.registeredTags.mermaid.fn;
@@ -123,7 +123,7 @@ describe('hexo-mermaid-js-diagrams', () => {
   });
 
   it('should register filter for js_url configuration', () => {
-    mockHexo.config.mermaid.renderMode = 'live';
+    mockHexo.config.mermaid.render_mode = 'live';
     mockHexo.config.mermaid.js_url = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js';
     require('../index.js');
     

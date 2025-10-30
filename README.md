@@ -17,9 +17,10 @@ Add to your `_config.yml`:
 ```yaml
 mermaid:
   enable: true
-  renderMode: puppeteer  # 'puppeteer' (default) or 'live'
+  render_mode: puppeteer  # 'puppeteer' (default) or 'live'
   theme: default
   js_url: https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js  # optional, defaults to local mermaid.min.js
+  priority: 0  # optional, filter execution priority (default: 0)
 ```
 
 ### Render Modes
