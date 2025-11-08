@@ -1,15 +1,19 @@
 {
-  "name": "hexo-mermaid-js-diagrams",
-  "version": "0.0.6",
-  "description": "Hexo plugin for rendering mermaid diagrams.",
+  "name": "hexo-plugin-mermaid-js-diagrams",
+  "version": "1.0.0",
+  "description": "Hexo plugin for rendering mermaid diagrams with interactive controls.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*.test.js"
   },
   "keywords": [
     "Hexo",
-    "Mermaid"
+    "Mermaid",
+    "diagram",
+    "flowchart",
+    "interactive"
   ],
+  "author": "neoalienson",
   "license": "MIT",
   "dependencies": {
     "puppeteer": "^24.22.1"
@@ -17,5 +21,12 @@
   "devDependencies": {
     "mocha": "^10.0.0"
   },
-  "repository": "neoalienson/hexo-mermaid-js-diagrams"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neoalienson/hexo-plugin-mermaid-js-diagrams.git"
+  },
+  "bugs": {
+    "url": "https://github.com/neoalienson/hexo-plugin-mermaid-js-diagrams/issues"
+  },
+  "homepage": "https://github.com/neoalienson/hexo-plugin-mermaid-js-diagrams#readme"
 }

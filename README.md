@@ -1,13 +1,20 @@
-Hexo plugin for rendering mermaid js diagrams
+# hexo-plugin-mermaid-js-diagrams
 
-This repo maintains the upgrade.
+Hexo plugin for rendering Mermaid.js diagrams with interactive controls.
 
-* mermaid 10.9.1
+## Features
 
-Install:
+- 🎨 Mermaid 10.9.1 support
+- 🔄 Two render modes: server-side (puppeteer) and client-side (live)
+- 🎮 Interactive controls: zoom in/out, reset, download SVG
+- 🖱️ Draggable controls and diagrams
+- ⚙️ Fully configurable positioning and behavior
+- 📦 Zero configuration required (works out of the box)
+
+## Installation
 
 ```shell
-npm i hexo-mermaid-js-diagrams
+npm i hexo-plugin-mermaid-js-diagrams
 ```
 
 ## Configuration
@@ -21,6 +28,17 @@ mermaid:
   theme: default
   js_url: https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js  # optional, defaults to local mermaid.min.js
   priority: 0  # optional, filter execution priority (default: 0)
+  controls:  # optional, interactive controls
+    enable: true  # enable/disable all controls
+    zoomIn: true  # show zoom in button (🔍)
+    zoomOut: true  # show zoom out button (🔎)
+    reset: true  # show reset button (↺)
+    download: true  # show download SVG button (💾)
+    position: bottom-right  # button position: top-left, top-right, bottom-left, bottom-right
+    draggable: true  # allow dragging controls to reposition
+  diagramDraggable: true  # allow dragging diagram to reposition
+  width: 100%  # diagram container width (e.g., 100%, 800px, 50vw)
+  debug: false  # enable console logging for troubleshooting
 ```
 
 ### Render Modes
@@ -44,3 +62,11 @@ graph TD;
 ⚠️ **Puppeteer mode**: Uses `puppeteer` `eval()`. The validation to prevent potential security vulnerabilities is not reviewed. Use at your own risk.
 
 ⚠️ **Live mode**: Executes Mermaid.js in the browser. Ensure diagram content is trusted.
+
+## Repository
+
+https://github.com/neoalienson/hexo-plugin-mermaid-js-diagrams
+
+## License
+
+MIT
