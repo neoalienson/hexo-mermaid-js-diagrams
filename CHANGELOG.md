@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-01-09
+
+### Fixed
+- Fixed zoom level reset bug when dragging diagrams - scale state now preserved across drag operations
+- Fixed syntax error in inline onclick handlers by migrating to event delegation with data-action attributes
+- Fixed diagram jump issue after reset - translate position variables now properly reset to 0
+
+### Changed
+- Refactored helper functions (generateStyles, generateLiveScript) into separate module for better testability
+- Improved code maintainability by extracting inline styles and scripts into reusable functions
+
+### Added
+- Unit tests for helper functions with 100% coverage
+- Test coverage for zoom-drag-reset behavior
+- jsdom as dev dependency for DOM testing
+
 ## [1.0.0] - 2025-01-08
 
 ### Added

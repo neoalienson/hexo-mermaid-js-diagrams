@@ -44,18 +44,50 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
         const wrapperWidth = width || '100%';
         let html = `<div class="mermaid-wrapper" style="position:relative;width:${wrapperWidth};overflow:hidden;user-select:none">`;
         html += svg;
-        html += `<div class="mermaid-controls" style="position:absolute;${posStyle};display:flex;gap:4px;z-index:10;cursor:${cursor}" onload="${dragScript}">`;
-        if (controls.zoomIn) html += '<button onclick="const s=this.parentElement.previousElementSibling;const t=s.style.transform.match(/scale\\(([\\d.]+)\\)/);const sc=(t?parseFloat(t[1]):1)*1.2;s.style.transform=\'scale(\'+sc+\')\';s.style.transformOrigin=\'top left\'" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Zoom In">🔍</button>';
-        if (controls.zoomOut) html += '<button onclick="const s=this.parentElement.previousElementSibling;const t=s.style.transform.match(/scale\\(([\\d.]+)\\)/);const sc=(t?parseFloat(t[1]):1)/1.2;s.style.transform=\'scale(\'+sc+\')\';s.style.transformOrigin=\'top left\'" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Zoom Out">🔎</button>';
-        if (controls.reset) html += '<button onclick="const w=this.parentElement.parentElement;const s=w.querySelector(\'svg\');s.style.transform=\'\';s.style.transformOrigin=\'top left\'" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Reset">↺</button>';
-        if (controls.download) html += '<button onclick="const s=this.parentElement.previousElementSibling.cloneNode(true);s.removeAttribute(\'style\');const svg=s.outerHTML.replace(/<br\\s*\\/?>/gi,\'\').replace(/<\\/p>/gi,\'\').replace(/&nbsp;/gi,\'&#160;\');const b=new Blob([svg],{type:\'image/svg+xml\'});const u=URL.createObjectURL(b);const a=document.createElement(\'a\');a.href=u;a.download=\'mermaid-diagram.svg\';a.click();URL.revokeObjectURL(u)" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Download SVG">💾</button>';
+        html += `<div class="mermaid-controls" style="position:absolute;${posStyle};display:flex;gap:4px;z-index:10;cursor:${cursor}">`;
+        if (controls.zoomIn) html += '<button data-action="zoom-in" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Zoom In">🔍</button>';
+        if (controls.zoomOut) html += '<button data-action="zoom-out" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Zoom Out">🔎</button>';
+        if (controls.reset) html += '<button data-action="reset" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Reset">↺</button>';
+        if (controls.download) html += '<button data-action="download" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Download SVG">💾</button>';
         html += '</div>';
-        let scripts = '';
-        if (controls.draggable !== false) {
-            scripts += `
+        let scripts = `
 (function(){
-    const c = document.currentScript.previousElementSibling;
-    let dx=0, dy=0, px=0, py=0;
+    const w = document.currentScript.parentElement;
+    const c = w.querySelector(".mermaid-controls");
+    const s = w.querySelector("svg");
+    c.addEventListener("click", function(e) {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        const action = btn.dataset.action;
+        if (action === "zoom-in") {
+            const t = s.style.transform.match(/scale\\(([\\d.]+)\\)/);
+            const sc = (t ? parseFloat(t[1]) : 1) * 1.2;
+            s.style.transform = "scale(" + sc + ")";
+            s.style.transformOrigin = "top left";
+        } else if (action === "zoom-out") {
+            const t = s.style.transform.match(/scale\\(([\\d.]+)\\)/);
+            const sc = (t ? parseFloat(t[1]) : 1) / 1.2;
+            s.style.transform = "scale(" + sc + ")";
+            s.style.transformOrigin = "top left";
+        } else if (action === "reset") {
+            s.style.transform = "";
+            s.style.transformOrigin = "top left";
+        } else if (action === "download") {
+            const clone = s.cloneNode(true);
+            clone.removeAttribute("style");
+            const svgStr = clone.outerHTML.replace(/<br\\s*\\/?>/gi, "").replace(/<\\/p>/gi, "").replace(/&nbsp;/gi, "&#160;");
+            const b = new Blob([svgStr], {type: "image/svg+xml"});
+            const u = URL.createObjectURL(b);
+            const a = document.createElement("a");
+            a.href = u;
+            a.download = "mermaid-diagram.svg";
+            a.click();
+            URL.revokeObjectURL(u);
+        }
+    });
+`;
+        if (controls.draggable !== false) {
+            scripts += `    let dx=0, dy=0, px=0, py=0;
     c.onmousedown = (e) => {
         e.preventDefault();
         px = e.clientX;
@@ -76,8 +108,9 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
             document.onmouseup = null;
         };
     };
-})();`;
+`;
         }
+        scripts += `})();`;
         if (diagramDraggable !== false) {
             if (debug) {
                 scripts += `
@@ -94,7 +127,7 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
     w.style.cursor = "grab";
     s.style.userSelect = "none";
     s.style.position = "relative";
-    let tx=0, ty=0, px=0, py=0, dragging=false;
+    let tx=0, ty=0, px=0, py=0, sc=1, dragging=false;
     console.log("[Mermaid Debug] Adding listeners");
     w.addEventListener("mousedown", function(e) {
         console.log("[Mermaid Debug] Mousedown event", e.target);
@@ -112,7 +145,9 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
             tx = parseFloat(t[1]);
             ty = parseFloat(t[2]);
         }
-        console.log("[Mermaid Debug] Mousedown", {px, py, tx, ty, dragging});
+        const scaleMatch = s.style.transform.match(/scale\(([\d.]+)\)/);
+        if (scaleMatch) sc = parseFloat(scaleMatch[1]);
+        console.log("[Mermaid Debug] Mousedown", {px, py, tx, ty, sc, dragging});
     });
     document.addEventListener("mousemove", function(e) {
         if (!dragging) return;
@@ -121,11 +156,10 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
         const dy = e.clientY - py;
         const nt = tx + dx;
         const nty = ty + dy;
-        const scale = s.style.transform.match(/scale\(([\d.]+)\)/);
-        const scaleStr = scale ? " scale(" + scale[1] + ")" : "";
+        const scaleStr = sc !== 1 ? " scale(" + sc + ")" : "";
         s.style.transform = "translate(" + nt + "px, " + nty + "px)" + scaleStr;
         s.style.transformOrigin = "top left";
-        console.log("[Mermaid Debug] Mousemove", {dx, dy, tx: nt, ty: nty});
+        console.log("[Mermaid Debug] Mousemove", {dx, dy, tx: nt, ty: nty, sc});
     });
     document.addEventListener("mouseup", function() {
         if (dragging) {
@@ -149,7 +183,7 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
     w.style.cursor = "grab";
     s.style.userSelect = "none";
     s.style.position = "relative";
-    let tx=0, ty=0, px=0, py=0, dragging=false;
+    let tx=0, ty=0, px=0, py=0, sc=1, dragging=false;
     w.addEventListener("mousedown", function(e) {
         if (e.target.closest(".mermaid-controls") || e.target.closest("button")) return;
         dragging = true;
@@ -162,6 +196,8 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
             tx = parseFloat(t[1]);
             ty = parseFloat(t[2]);
         }
+        const scaleMatch = s.style.transform.match(/scale\(([\d.]+)\)/);
+        if (scaleMatch) sc = parseFloat(scaleMatch[1]);
     });
     document.addEventListener("mousemove", function(e) {
         if (!dragging) return;
@@ -170,8 +206,7 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
         const dy = e.clientY - py;
         const nt = tx + dx;
         const nty = ty + dy;
-        const scale = s.style.transform.match(/scale\(([\d.]+)\)/);
-        const scaleStr = scale ? " scale(" + scale[1] + ")" : "";
+        const scaleStr = sc !== 1 ? " scale(" + sc + ")" : "";
         s.style.transform = "translate(" + nt + "px, " + nty + "px)" + scaleStr;
         s.style.transformOrigin = "top left";
     });
@@ -189,9 +224,7 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
 })();`;
             }
         }
-        if (scripts) {
-            html += `<script>${scripts}</script>`;
-        }
+        html += `<script>${scripts}</script>`;
         html += '</div>';
 
         return html;
