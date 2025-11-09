@@ -42,13 +42,15 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
         const dragScript = controls.draggable !== false ? 'let dx=0,dy=0,px=0,py=0;this.onmousedown=(e)=>{e.preventDefault();px=e.clientX;py=e.clientY;document.onmousemove=(e)=>{e.preventDefault();dx=px-e.clientX;dy=py-e.clientY;px=e.clientX;py=e.clientY;this.style.top=(this.offsetTop-dy)+"px";this.style.left=(this.offsetLeft-dx)+"px";this.style.right="auto";this.style.bottom="auto"}.bind(this);document.onmouseup=()=>{document.onmousemove=null;document.onmouseup=null}}.bind(this)' : '';
 
         const wrapperWidth = width || '100%';
-        let html = `<div class="mermaid-wrapper" style="position:relative;width:${wrapperWidth};overflow:hidden;user-select:none">`;
+        let html = `<style>.mermaid-wrapper.fullscreen{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#fff}.mermaid-wrapper.fullscreen .mermaid-controls{margin-right:20px}</style>`;
+        html += `<div class="mermaid-wrapper" style="position:relative;width:${wrapperWidth};overflow:hidden;user-select:none">`;
         html += svg;
         html += `<div class="mermaid-controls" style="position:absolute;${posStyle};display:flex;gap:4px;z-index:10;cursor:${cursor}">`;
         if (controls.zoomIn) html += '<button data-action="zoom-in" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Zoom In">🔍</button>';
         if (controls.zoomOut) html += '<button data-action="zoom-out" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Zoom Out">🔎</button>';
         if (controls.reset) html += '<button data-action="reset" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Reset">↺</button>';
         if (controls.download) html += '<button data-action="download" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Download SVG">💾</button>';
+        html += '<button data-action="fullscreen" style="width:32px;height:32px;border:none;background:rgba(255,255,255,0.9);border-radius:4px;cursor:pointer;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.2)" title="Fullscreen">⛶</button>';
         html += '</div>';
         let scripts = `
 (function(){
@@ -83,6 +85,25 @@ module.exports = (content, controls, diagramDraggable, width, debug)=>{
             a.download = "mermaid-diagram.svg";
             a.click();
             URL.revokeObjectURL(u);
+        } else if (action === "fullscreen") {
+            if (w.classList.contains("fullscreen")) {
+                w.classList.remove("fullscreen");
+                btn.innerHTML = "⛶";
+                btn.title = "Fullscreen";
+                c.style.top = "";
+                c.style.left = "";
+                c.style.right = "";
+                c.style.bottom = "";
+            } else {
+                w.classList.add("fullscreen");
+                btn.innerHTML = "✕";
+                btn.title = "Close";
+                c.style.top = "";
+                c.style.left = "";
+                c.style.right = "";
+                c.style.bottom = "";
+                c.style.marginRight = "";
+            }
         }
     });
 `;

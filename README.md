@@ -6,7 +6,7 @@ Hexo plugin for rendering Mermaid.js diagrams with interactive controls.
 
 - 🎨 Mermaid 10.9.1 support
 - 🔄 Two render modes: server-side (puppeteer) and client-side (live)
-- 🎮 Interactive controls: zoom in/out, reset, download SVG
+- 🎮 Interactive controls: zoom in/out, reset, download SVG, fullscreen
 - 🖱️ Draggable controls and diagrams
 - ⚙️ Fully configurable positioning and behavior
 - 📦 Zero configuration required (works out of the box)

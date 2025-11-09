@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { generateStyles, generateLiveScript } = require('../lib/helpers');
+const { JSDOM } = require('jsdom');
 
 describe('Helper Functions', () => {
     describe('generateStyles', () => {
@@ -46,7 +47,6 @@ describe('Helper Functions', () => {
         });
 
         it('should preserve zoom level after reset when dragging', (done) => {
-            const { JSDOM } = require('jsdom');
             const controls = { zoomIn: true, zoomOut: true, reset: true, download: true, draggable: true };
             const script = generateLiveScript(controls, true, false);
             const dom = new JSDOM(`<!DOCTYPE html><html><body><div class="mermaid"><svg></svg></div>${script}</body></html>`, { runScripts: 'dangerously' });
@@ -87,7 +87,6 @@ describe('Helper Functions', () => {
         });
 
         it('should reset drag position after reset', (done) => {
-            const { JSDOM } = require('jsdom');
             const controls = { zoomIn: true, zoomOut: true, reset: true, download: true, draggable: true };
             const script = generateLiveScript(controls, true, false);
             const dom = new JSDOM(`<!DOCTYPE html><html><body><div class="mermaid"><svg></svg></div>${script}</body></html>`, { runScripts: 'dangerously' });
@@ -118,7 +117,6 @@ describe('Helper Functions', () => {
         });
 
         it('should not jump when dragging after reset', (done) => {
-            const { JSDOM } = require('jsdom');
             const controls = { zoomIn: true, zoomOut: true, reset: true, download: true, draggable: true };
             const script = generateLiveScript(controls, true, false);
             const dom = new JSDOM(`<!DOCTYPE html><html><body><div class="mermaid"><svg></svg></div>${script}</body></html>`, { runScripts: 'dangerously' });
@@ -157,6 +155,15 @@ describe('Helper Functions', () => {
                 assert.strictEqual(parseFloat(match[2]), 10);
                 done();
             }, 150);
+        });
+
+        it('should include fullscreen button', () => {
+            const controls = { zoomIn: true, zoomOut: true, reset: true, download: true, draggable: true };
+            const result = generateLiveScript(controls, true, false);
+            assert(result.includes('fullscreen'));
+            assert(result.includes('⛶'));
+            assert(result.includes('✕'));
+            assert(result.includes("c.style.top=''"));
         });
     });
 });
