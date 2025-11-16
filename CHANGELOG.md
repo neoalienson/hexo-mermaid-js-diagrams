@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-14
+
+### Added
+- Markdown code fence syntax support with `markdown: true` configuration option
+- Standard ````mermaid code block syntax alongside existing `{% mermaid %}` tag syntax
+- HTML entity decoding for syntax-highlighted mermaid blocks
+- Automatic removal of syntax highlighting spans from processed content
+
+### Changed
+- Updated regex pattern to handle various HTML structures from syntax highlighters
+- Enhanced after_render:html filter to process Prism.js highlighted code blocks
+
 ## [1.0.2] - 2025-11-09
 
 ### Added

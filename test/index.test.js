@@ -300,4 +300,134 @@ describe('hexo-mermaid-js-diagrams', () => {
     
     assert.equal(capturedDraggable, true);
   });
+
+  describe('markdown code fence support', () => {
+    it('should register after_render:html filter when markdown is enabled', () => {
+      mockHexo.config.mermaid.markdown = true;
+      require('../index.js');
+      
+      assert(mockHexo.extend.filter.registeredFilters['after_render:html']);
+    });
+
+    it('should not register after_render:html filter when markdown is disabled', () => {
+      mockHexo.config.mermaid.markdown = false;
+      require('../index.js');
+      
+      assert(!mockHexo.extend.filter.registeredFilters['after_render:html']);
+    });
+
+    it('should convert markdown code fence to mermaid div', () => {
+      mockHexo.config.mermaid.markdown = true;
+      require('../index.js');
+      
+      const filterFn = mockHexo.extend.filter.registeredFilters['after_render:html'];
+      const input = `&lt;pre&gt;&lt;code class=&quot;language-mermaid&quot;&gt;block-beta
+columns 1
+  db((&quot;DB&quot;))
+  blockArrowId6&amp;lt;[&quot;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&quot;]&amp;gt;(down)
+  block:ID
+    A
+    B[&quot;A wide one in the middle&quot;]
+    C
+  end
+  space
+  D
+  ID --&amp;gt; D
+  C --&amp;gt; D
+  style B fill:#969,stroke:#333,stroke-width:4px&lt;/code&gt;&lt;/pre&gt;`;
+      
+      const result = filterFn(input);
+      
+      assert(result.includes('<div class="mermaid">'));
+      assert(result.includes('block-beta'));
+      assert(result.includes('db(("DB"))'));
+      assert(result.includes('blockArrowId6<["&nbsp;&nbsp;&nbsp;"]>(down)'));
+      assert(result.includes('ID --> D'));
+      assert(result.includes('C --> D'));
+      assert(!result.includes('&lt;'));
+      assert(!result.includes('&gt;'));
+      assert(!result.includes('&quot;'));
+      assert(!result.includes('&amp;'));
+    });
+
+    it('should handle multiple mermaid blocks', () => {
+      mockHexo.config.mermaid.markdown = true;
+      require('../index.js');
+      
+      const filterFn = mockHexo.extend.filter.registeredFilters['after_render:html'];
+      const input = `
+        &lt;pre&gt;&lt;code class=&quot;language-mermaid&quot;&gt;graph TD
+    A --&gt; B&lt;/code&gt;&lt;/pre&gt;
+        <p>Some text</p>
+        &lt;pre&gt;&lt;code class=&quot;language-mermaid&quot;&gt;flowchart LR
+    C --&gt; D&lt;/code&gt;&lt;/pre&gt;
+      `;
+      
+      const result = filterFn(input);
+      
+      const mermaidDivs = (result.match(/<div class="mermaid">/g) || []).length;
+      assert.equal(mermaidDivs, 2);
+      assert(result.includes('graph TD'));
+      assert(result.includes('flowchart LR'));
+    });
+
+    it('should not affect non-mermaid code blocks', () => {
+      mockHexo.config.mermaid.markdown = true;
+      require('../index.js');
+      
+      const filterFn = mockHexo.extend.filter.registeredFilters['after_render:html'];
+      const input = `
+        &lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;console.log('hello');&lt;/code&gt;&lt;/pre&gt;
+        &lt;pre&gt;&lt;code class=&quot;language-mermaid&quot;&gt;graph TD
+    A --&gt; B&lt;/code&gt;&lt;/pre&gt;
+        &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;print('world')&lt;/code&gt;&lt;/pre&gt;
+      `;
+      
+      const result = filterFn(input);
+      
+      assert(result.includes('language-javascript'));
+      assert(result.includes('language-python'));
+      assert(result.includes('<div class="mermaid">'));
+      const mermaidDivs = (result.match(/<div class="mermaid">/g) || []).length;
+      assert.equal(mermaidDivs, 1);
+    });
+
+    it('should decode HTML entities correctly', () => {
+      mockHexo.config.mermaid.markdown = true;
+      require('../index.js');
+      
+      const filterFn = mockHexo.extend.filter.registeredFilters['after_render:html'];
+      const input = `&lt;pre&gt;&lt;code class=&quot;language-mermaid&quot;&gt;graph TD
+    A[&quot;Test &amp;amp; Example&quot;] --&amp;gt; B
+    B --&amp;gt; C[&quot;Another &amp;lt;test&amp;gt;&quot;]
+    C --&amp;gt; D[&quot;Quote: &amp;quot;Hello&amp;quot;&quot;]&lt;/code&gt;&lt;/pre&gt;`;
+      
+      const result = filterFn(input);
+      
+      assert(result.includes('Test & Example'));
+      assert(result.includes('Another <test>'));
+      assert(result.includes('Quote: "Hello"'));
+      assert(result.includes('A --> B'));
+      assert(!result.includes('&amp;'));
+      assert(!result.includes('&lt;'));
+      assert(!result.includes('&gt;'));
+      assert(!result.includes('&quot;'));
+    });
+
+    it('should remove syntax highlighting spans', () => {
+      mockHexo.config.mermaid.markdown = true;
+      require('../index.js');
+      
+      const filterFn = mockHexo.extend.filter.registeredFilters['after_render:html'];
+      const input = `&lt;pre&gt;&lt;code class=&quot;language-mermaid&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;graph&lt;/span&gt; &lt;span class=&quot;token title&quot;&gt;TD&lt;/span&gt;
+    &lt;span class=&quot;token node&quot;&gt;A&lt;/span&gt; --&amp;gt; &lt;span class=&quot;token node&quot;&gt;B&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;`;
+      
+      const result = filterFn(input);
+      
+      assert(result.includes('graph TD'));
+      assert(result.includes('A --> B'));
+      assert(!result.includes('<span'));
+      assert(!result.includes('token'));
+    });
+  });
 });
